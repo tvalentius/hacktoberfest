@@ -39,10 +39,11 @@ These instructions will get you a copy of the project up and running on your loc
 ## Application Setup
 
 1) [Install and Setup](#installing)
-2) [Setup Oauth Token](#setup-oauth-token)
-3) [Configure remaining environment variales](#env-variables)
-4) [Create first user](#create-first-user)
-5) [Import Projects](#import-projects)
+2) [Local Setup With Docker](#local-setup-with-docker)
+3) [Setup Oauth Token](#setup-oauth-token)
+4) [Configure remaining environment variables](#env-variables)
+5) [Create first user](#create-first-user)
+6) [Import Projects](#import-projects)
 
 ### Installing
 
@@ -57,6 +58,122 @@ In your local repository, run script/setup, which will install all necessary dep
 ```
 script/setup
 ```
+### Local Setup With Docker
+
+If you would like to use Docker to work with the application, first make sure that you have Docker and Docker Compose on your local machine.
+
+Next clone the repo as described in [Step 1](#installing). 
+
+From there, create a local `.env` file, and add fill out the following values, using steps [3](#setup-oauth-token) and [4](#env-variables) to guide you:
+
+```
+HACKTOBERFEST_DATABASE_HOST=database
+HACKTOBERFEST_DATABASE_USERNAME=hacktoberfest
+HACKTOBERFEST_DATABASE_PASSWORD=sekret
+HACKTOBERFEST_API_KEY=sekret
+REDIS_HOST=redis
+REDIS_PORT=6379
+DALLI_SERVER=memcached
+GITHUB_CLIENT_ID=<fill-in-for-dev-setup>
+GITHUB_CLIENT_SECRET=<fill-in-for-dev-setup>
+START_DATE=<fill-in-for-dev-setup>
+END_DATE=<fill-in-for-dev-setup>
+AIRTABLE_API_KEY=<fill-in-for-dev-setup>
+AIRTABLE_APP_ID=<fill-in-for-dev-setup>
+SEGMENT_WRITE_KEY=<leave-blank>
+```
+**Note**: Use the following values when setting up your Oauth token:
+
+```
+> Homepage URL: `http://localhost`\
+> Authorization callback URL: `http://localhost/auth/github/callback`
+```
+The local Docker setup uses a webserver, in the same way that the application does in staging and production, so it will be reachable on port `80`.
+
+Run the startup script, `./script/docker-startup.sh` to start your services.
+
+**Note:** You do not need to use the other startup scripts in the repo if you are using Docker to run the application locally. When using Docker, follow the steps in this section of the README.
+
+**Inspecting and Troubleshooting**
+
+You can inspect whether or not your services have started successfully by running the `check` script: `./script/check.sh`. You will see the following output if the services are all running:
+
+```
+         Name                         Command               State           Ports         
+-------------------------------------------------------------------------------------------
+hacktoberfest_app_1         ./script/docker-entrypoint.sh    Up      3000/tcp              
+hacktoberfest_database_1    docker-entrypoint.sh postgres    Up      0.0.0.0:5432->5432/tcp
+hacktoberfest_redis_1       docker-entrypoint.sh redis ...   Up      6379/tcp              
+hacktoberfest_sidekiq_1     ./script/sidekiq-entrypoint.sh   Up      3000/tcp              
+hacktoberfest_webserver_1   nginx -g daemon off;             Up      0.0.0.0:80->80/tcp    
+```
+
+In cases where you need to investigate an exit status, you can get the logs of the service with `docker-compose logs <service-name>`.
+
+To check that the application is ready to accept traffic, run `docker-compose logs app`. You should see the following output:
+
+```
+app_1        | ==> Hacktoberfest is now ready to go!
+app_1        | => Booting Puma
+app_1        | => Rails 5.2.3 application starting in development 
+app_1        | => Run `rails server -h` for more startup options
+app_1        | Puma starting in single mode...
+app_1        | * Version 4.1.1 (ruby 2.5.8-p224), codename: Fourth and One
+app_1        | * Min threads: 5, max threads: 5
+app_1        | * Environment: development
+app_1        | * Listening on tcp://0.0.0.0:3000
+app_1        | Use Ctrl-C to stop
+```
+Once the app is running, you can connect to it by navigating to `localhost`. Please note that trying to connect to the app at `localhost` before it is ready will result in `502` Bad Gateway error, so be sure to check the logs first.
+
+**Testing**
+
+If you would like to run commands against your app service, you can do that with the following command (using rubocop as an example): 
+
+```
+./script/test-command.sh bundle exec rubocop app config db lib spec --safe-auto-correct
+```
+
+Or to run a particular spec:
+
+```
+./script/test-command.sh bundle exec rspec <your-spec-file>
+```
+**Running migrations**
+
+In cases where you want to create a migration in the context of your current development, you can use the following command:
+
+```
+docker-compose exec app rails g migration <your migration>
+```
+To run the migration, type:
+
+```
+docker-compose exec app bundle exec rake db:migrate
+```
+In both cases, the relevant files and changes will be available on your host, as well as on your container.
+
+If the app is currently stopped and you need to run migrations, you can use the `restart-app` script, which will restart the app and run any pending migrations. See the explanation below for more detail.
+
+**Reloading the server**
+
+There are cases where you will need to stop and restart the Rails server, in order for things like configuration changes to take effect. 
+
+To do this, run the following script to stop and restart the app: `./script/restart-app.sh`.
+
+This will restart the app and run any pending migrations.
+
+**Adding a new gem to the project**
+
+Another task you may need to accomplish is adding a new gem to the project. Because this local Docker setup depends on a gem volume (to speed up development and boot times), you need to both stop the application and remove this volume for your changes to take effect. 
+
+To do this, run the following script: `./script/rebuild-app.sh`.
+
+**Taking the setup down**
+
+To stop your services and remove the network, you can run `docker-compose down`.
+
+Or, if you would like to remove your build cache and volumes, you can use the `stop-and-clean` script: `./script/stop-and-clean.sh`. 
 
 ### Setup Oauth Token
 

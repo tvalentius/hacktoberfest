@@ -4,14 +4,6 @@
 # See: https://github.com/mperham/sidekiq
 
 # Redis config shared between client and server
-# rubocop:disable Style/MutableConstant
-if (redis_url = ENV.fetch('HACKTOBERFEST_REDIS_URL', nil))
-  REDIS_CONFIG = {
-    url: redis_url,
-    password: ENV.fetch('HACKTOBERFEST_REDIS_PASSWORD', nil)
-  }
-end
-# rubocop:enable Style/MutableConstant
 
 # Custom Error message reporting a job death to airbrake
 module Sidekiq
@@ -28,46 +20,10 @@ module Sidekiq
 end
 
 Sidekiq.configure_server do |config|
-  config.redis = REDIS_CONFIG if defined?(REDIS_CONFIG)
-
-  # https://github.com/mperham/sidekiq/wiki/Reliability#using-super_fetch
-  config.super_fetch!
-
-  # Periodic job setup
-  # See: https://github.com/mperham/sidekiq/wiki/Ent-Periodic-Jobs
-  config.periodic do |mgr|
-    # Every hour
-    mgr.register(
-      '0 */2 * * *',
-      TransitionAllUsersJob,
-      retry: 3,
-      queue: :critical
-    )
-    # Every day at 3AM
-    mgr.register('0 3 * * *', UpdateAllIssuesJob, retry: 3, queue: :critical)
-    # Every day at 5AM
-    mgr.register(
-      '0 5 * * *',
-      UpdateAllIssuesQualityJob,
-      retry: 3,
-      queue: :default
-    )
-    # Every hour. 1 hour max latency when updating banned repos in airtable
-    mgr.register(
-      '0 * * * *',
-      BanAllReposJob,
-      retry: 3,
-      queue: :default
-    )
-
-    # Every 15 minutes
-    mgr.register(
-      '*/15 * * * *',
-      FetchSpamRepositoriesJob,
-      retry: 3,
-      queue: :default
-    )
-  end
+  config.redis = {
+    host: ENV['REDIS_HOST'],
+    port: ENV['REDIS_PORT'] || '6379'
+  }
 
   config.death_handlers << lambda { |job, ex|
     error = Sidekiq::JobDeathError.new(job, ex)
@@ -78,5 +34,8 @@ Sidekiq.configure_server do |config|
 end
 
 Sidekiq.configure_client do |config|
-  config.redis = REDIS_CONFIG if defined?(REDIS_CONFIG)
+  config.redis = {
+    host: ENV['REDIS_HOST'],
+    port: ENV['REDIS_PORT'] || '6379'
+  }
 end

@@ -5,6 +5,11 @@ require 'rails_helper'
 RSpec.describe UserStateTransitionSegmentService do
   let(:transition) { double }
 
+  before do
+    allow(UserPullRequestSegmentUpdaterService)
+      .to receive(:call).and_return(true)
+  end
+
   describe '.call' do
     context 'the transition event is register and the user is new' do
       let(:user) { FactoryBot.create(:user, :new) }
@@ -16,8 +21,13 @@ RSpec.describe UserStateTransitionSegmentService do
       it 'calls SegmentService#identify with proper arguments' do
         expect_any_instance_of(SegmentService).to receive(:identify).with(
           email: user.email,
-          marketing_emails: user.marketing_emails,
-          state: 'register'
+          digitalocean_marketing_emails: user.digitalocean_marketing_emails,
+          intel_marketing_emails: user.intel_marketing_emails,
+          dev_marketing_emails: user.dev_marketing_emails,
+          category: user.category,
+          country: user.country,
+          state: 'register',
+          pull_requests_count: 0
         )
         allow_any_instance_of(SegmentService).to receive(:track).with(
           'register'
@@ -28,8 +38,13 @@ RSpec.describe UserStateTransitionSegmentService do
       it 'calls SegmentService#track with proper arguments' do
         allow_any_instance_of(SegmentService).to receive(:identify).with(
           email: user.email,
-          marketing_emails: user.marketing_emails,
-          state: 'register'
+          digitalocean_marketing_emails: user.digitalocean_marketing_emails,
+          intel_marketing_emails: user.intel_marketing_emails,
+          dev_marketing_emails: user.dev_marketing_emails,
+          category: user.category,
+          country: user.country,
+          state: 'register',
+          pull_requests_count: 0
         )
         expect_any_instance_of(SegmentService).to receive(:track).with(
           'register'
@@ -67,12 +82,13 @@ RSpec.describe UserStateTransitionSegmentService do
     end
 
     context 'the event is retry_complete and the user is incompleted' do
-      let(:user) { FactoryBot.create(:user, :incompleted) }
-
       before do
+        travel_to Time.zone.parse(ENV['END_DATE']) + 1.day
         allow(transition).to receive(:event).and_return(:retry_complete)
       end
 
+      let(:user) { FactoryBot.create(:user, :incompleted) }
+
       it 'calls SegmentService#identify with proper arguments' do
         allow_any_instance_of(SegmentService).to receive(:track).with(
           'user_completed'
@@ -92,31 +108,33 @@ RSpec.describe UserStateTransitionSegmentService do
         )
         UserStateTransitionSegmentService.call(user, transition)
       end
+
+      after { travel_back }
     end
 
-    context 'the transition event is ineligible and the user is waiting' do
+    context 'the transition event is insufficient and the user is waiting' do
       let(:user) { FactoryBot.create(:user, :waiting) }
 
       before do
-        allow(transition).to receive(:event).and_return(:ineligible)
+        allow(transition).to receive(:event).and_return(:insufficient)
       end
 
       it 'calls SegmentService#identify with proper arguments' do
         allow_any_instance_of(SegmentService).to receive(:track).with(
-          'user_ineligible'
+          'user_insufficient'
         )
         expect_any_instance_of(SegmentService).to receive(:identify).with(
-          state: 'ineligible'
+          state: 'insufficient'
         )
         UserStateTransitionSegmentService.call(user, transition)
       end
 
       it 'calls SegmentService#track with proper arguments' do
         allow_any_instance_of(SegmentService).to receive(:identify).with(
-          state: 'ineligible'
+          state: 'insufficient'
         )
         expect_any_instance_of(SegmentService).to receive(:track).with(
-          'user_ineligible'
+          'user_insufficient'
         )
         UserStateTransitionSegmentService.call(user, transition)
       end
@@ -187,11 +205,12 @@ RSpec.describe UserStateTransitionSegmentService do
     end
 
     context 'the event is gifted and the user is incompleted' do
-      let(:user) { FactoryBot.create(:user, :incompleted) }
-
       before do
+        travel_to Time.zone.parse(ENV['END_DATE']) + 1.day
         allow(transition).to receive(:event).and_return(:gifted)
       end
+
+      let(:user) { FactoryBot.create(:user, :incompleted) }
 
       it 'calls SegmentService#identify with proper arguments' do
         expect_any_instance_of(SegmentService).to receive(:identify).with(
@@ -212,6 +231,8 @@ RSpec.describe UserStateTransitionSegmentService do
         )
         UserStateTransitionSegmentService.call(user, transition)
       end
+
+      after { travel_back }
     end
   end
 end

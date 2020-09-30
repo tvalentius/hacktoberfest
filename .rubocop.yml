@@ -1,6 +1,6 @@
 require: rubocop-rails
 AllCops:
-  TargetRubyVersion: 2.5.1
+  TargetRubyVersion: 2.5.8
   Exclude:
     - 'Gemfile'  #TODO: Update Gemfile style rules
     - 'db/schema.rb'
@@ -26,3 +26,9 @@ Rails:
   Enabled: true
 Documentation:
   Enabled: false
+Rails/UnknownEnv:
+  Environments:
+    - production
+    - development
+    - test
+    - staging

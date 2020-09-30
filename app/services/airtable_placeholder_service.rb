@@ -8,101 +8,69 @@ module AirtablePlaceholderService
   def call(table_name)
     case table_name
     when 'Meetups'
+      {
+        'data' =>
+        [
+          {
+            'attributes' => {
+              'title' => 'Hacktoberfest in Brasilia',
+              'startDate' => '2020-10-16',
+              'location' => {
+                'city' => 'Brasilia',
+                'country' => 'Brazil'
+              }
+            },
+            'links' => {
+              'register' => 'http://organize.mlh.io/participants/events/3921-hacktoberfest-in-brasilia/register'
+            }
+          },
+          {
+            'attributes' => {
+              'title' => 'Hacktoberfest @IPN',
+              'startDate' => '2020-10-01',
+              'location' => {
+                'city' => 'Mexico City',
+                'country' => 'Mexico'
+              }
+            },
+            'links' => {
+              'register' => 'http://organize.mlh.io/participants/events/3924-hacktoberfest-ipn/register'
+            }
+          }
+        ]
+      }
+    when 'Event List'
       [
-        { 'Event Name' => 'Hacktoberfest@JKLU',
-          'Event City' => 'Jaipur',
+        {
+          'Event Named' => 'Hacktoberfest 2020 Official Kick-Off Celebration',
+          'Event City' => 'APAC',
           'Event Country' => 'India',
-          'Event Start Date' => '2019-10-12',
-          'Event URL' => 'https://csi.jklu.edu.in/calendar.php',
-          'Event Organizer' => 'CSI Student Chapter JKLU',
-          'Contact Email' => 'email@example.com',
-          'Contact Name' => 'Pravesh Bisaria',
-          'Agreed to CoC?' => true,
-          'Event State' => 'Rajasthan',
-          'Non-Public Event Note' => 'Open to JKLU Students',
-          'Event Capacity' => 100,
-          'Note' => 'No mention of HF',
-          'Reviewed By' => 'Samantha',
-          'Replied' => '9/20 batch email',
-          'Event Start Time' => '00:00',
-          'Event Start Date/Time' => '2019-10-12T00:00:00.000Z',
-          'Submitted Time' => '2019-09-16T14:53:00.000Z' },
-        { 'Event Name' => 'Hacktoberfest@JKLU',
-          'Event City' => 'Jaipur',
-          'Event Country' => 'India',
-          'Event Start Date' => '2019-10-12',
-          'Event URL' => 'https://csi.jklu.edu.in/calendar.php',
-          'Event Organizer' => 'CSI Student Chapter JKLU',
-          'Contact Email' => 'email@example.com',
-          'Contact Name' => 'Pravesh Bisaria',
-          'Agreed to CoC?' => true,
-          'Event State' => 'Rajasthan',
-          'Non-Public Event Note' => 'Open to JKLU Students',
-          'Event Capacity' => 100,
-          'Note' => 'No mention of HF',
-          'Reviewed By' => 'Samantha',
-          'Replied' => '9/20 batch email',
-          'Event Start Time' => '00:00',
-          'Event Start Date/Time' => '2019-10-12T00:00:00.000Z',
-          'Submitted Time' => '2019-09-16T14:53:00.000Z',
-          'Event Start Date/Time (Real)' => '10/12/2019 00:00' },
-        { 'Event Name' => '<ReactMeetup version={"Hacktoberfest 2019"} />',
-          'Event City' => 'Düsseldorf',
-          'Event Country' => 'Germany',
-          'Event Start Date' => '2019-10-13',
-          'Event URL' => 'https://www.meetup.com/de-DE/ReactJS-Meetup-Dusseldorf/events/265147478/',
-          'Event Organizer' => 'Thomas Frütel, Jonas Sprenger, Flo Becker',
-          'Published?' => true,
-          'Contact Email' => 'email@example.com',
-          'Contact Name' => 'Ravi',
-          'Agreed to CoC?' => true,
-          'Public Event?' => true,
-          'Event Capacity' => 50,
-          'Code Sent' => '9/26',
-          'Reviewed By' => 'Lorraine',
-          'Event Start Time' => '10:00',
-          'Event Start Date/Time' => '2019-10-13T10:00:00.000Z',
-          'Submitted Time' => '2019-09-25T14:16:43.000Z',
-          'Event Start Date/Time (Real)' => '10/13/2019 10:00' },
-        { 'Event Name' => 'Hacktoberfest Night',
-          'Event City' => 'Paris',
-          'Event Country' => 'France',
-          'Event Start Date' => '2019-10-15',
-          'Event URL' => 'https://www.meetup.com/fr-FR/Paris-Open-Source-Talks/',
-          'Event Organizer' =>
-          'Paris Open Source Talks Meetup
-           + Olivier Leplus + Maud Levy + Wassim Chegham',
-          'Published?' => true,
-          'Contact Email' => 'email@example.com',
-          'Contact Name' => 'Olivier Leplus',
-          'Agreed to CoC?' => true,
-          'Public Event?' => true,
-          'Event Capacity' => 40,
-          'Note' => 'no mention of HF',
-          'Reviewed By' => 'Samantha',
-          'Replied' => '9/20 batch email',
-          'Event Start Time' => '00:00',
-          'Event Start Date/Time' => '2019-10-15T00:00:00.000Z',
-          'Submitted Time' => '2019-09-13T15:16:55.000Z',
-          'Event Start Date/Time (Real)' => '10/15/2019 00:00' },
-        { 'Event Name' => 'Hacktoberfest 2019 x Nodes Copenhagen',
-          'Event City' => 'Copenhagen',
-          'Event Country' => 'Denmark',
-          'Event Start Date' => '2019-10-21',
-          'Event URL' => 'https://www.meetup.com/Nodes-Copenhagen/events/265336846/',
-          'Event Organizer' => 'Nodes Copenhagen',
-          'Contact Email' => 'email@example.com',
-          'Contact Name' => 'Narcis Zait',
-          'Agreed to CoC?' => true,
-          'Public Event?' => true,
-          'Event Capacity' => 50,
-          'Note' => "duplicate. don't publish",
-          'Reviewed By' => 'ST',
-          'Replied' => 'batch email 10/5',
-          'Submitted Time' => '2019-10-02T19:28:05.000Z',
-          'Event Start Date/Time (Real)' => '10/21/2019 ' }
+          'Date' => '2020-10-01',
+          'Link' => 'https://organize.mlh.io/participants/events/4019-hacktoberfest-2020-official-kick-off-celebration'
+        },
+        {
+          'Event Named' => 'Hacktoberfest Tuesdays: Americas',
+          'Event City' => 'New York',
+          'Event Country' => 'United States',
+          'Date' => '2020-10-06',
+          'Link' => 'https://organize.mlh.io/participants/events/4079-hacktoberfest-tuesdays-east-coast-and-more'
+        },
+        {
+          'Event Named' => 'Hacktoberfest Tuesdays: Asia',
+          'Event City' => 'Singapore',
+          'Event Country' => 'Singapore',
+          'Date' => '2020-10-13',
+          'Link' => 'https://organize.mlh.io/participants/events/4099-hacktoberfest-tuesdays-asia'
+        },
+        {
+          'Event Named' => 'Hacktoberfest Tuesdays: Europe',
+          'Event City' => 'London',
+          'Event Country' => 'United Kingdom',
+          'Date' => '2020-10-27',
+          'Link' => 'https://organize.mlh.io/participants/events/4101-hacktoberfest-tuesdays-europe'
+        }
       ]
-    when 'FAQ'
+    when 'FAQs'
       [
         { 'Question' =>
             "My draft pull requests don't seem
@@ -163,6 +131,74 @@ module AirtablePlaceholderService
             irrelevant, or labeled as
             **invalid**.",
           'Category' => 'Rules' }
+      ]
+    when 'Themed Repos'
+      [
+        {
+          'Repo Name' => 'electricitymap-contrib',
+          'Repo URL' => 'https://github.com/tmrowco/electricitymap-contrib',
+          'Repo Language' => 'Python',
+          'Description' => 'A real-time visualisation of the CO2 emissions of
+            electricity consumption'
+        },
+        {
+          'Repo Name' => 'tmrowapp-contrib',
+          'Repo URL' => 'https://github.com/tmrowco/tmrowapp-contrib',
+          'Repo Language' => 'JavaScript',
+          'Description' => 'Tomorrow automatically calculates the climate
+            impact of your daily choices by connecting to apps and services you
+            already use.'
+        },
+        {
+          'Repo Name' => 'community-toolbox',
+          'Repo URL' => 'https://github.com/publiclab/community-toolbox',
+          'Repo Language' => 'JavaScript',
+          'Description' => 'Tools to understand and welcome people into a
+            contributor community'
+        },
+        {
+          'Repo Name' => 'polarmap.js',
+          'Repo URL' => 'https://github.com/GeoSensorWebLab/polarmap.js',
+          'Repo Language' => 'JavaScript',
+          'Description' => 'Custom Leaflet layer for re-projecting maps and map
+            features'
+        },
+        {
+          'Repo Name' => 'climate',
+          'Repo URL' => 'https://github.com/apache/climate',
+          'Repo Language' => 'Jupyter Notebook',
+          'Description' => 'Mirror of Apache Open Climate Workbench'
+        },
+        {
+          'Repo Name' => 'awesome-open-climate-science',
+          'Repo URL' => 'https://github.com/pangeo-data/awesome-open-climate-science',
+          'Repo Language' => '',
+          'Description' => 'Awesome Open Atmospheric, Ocean, and Climate
+            Science'
+        },
+        {
+          'Repo Name' => 'contributor_covenant',
+          'Repo URL' => 'https://github.com/Ecohackerfarm/contributor_covenant',
+          'Repo Language' => 'CSS',
+          'Description' => 'Pledge your respect and appreciation for
+            contributors of all kinds to your open source project.'
+        },
+        {
+          'Repo Name' => 'RebelsManager',
+          'Repo URL' => 'https://github.com/extinctionrebellion/',
+          'Repo Language' => 'Ruby',
+          'Description' => 'Extinction Rebellion is an international movement
+            that uses non-violent civil disobedience in an attempt to halt mass
+            extinction and minimise the risk of social collapse. The Rebels
+            Manager is a CRM app for coordinators.'
+        },
+        {
+          'Repo Name' => 'pangeo',
+          'Repo URL' => 'https://github.com/pangeo-data/pangeo',
+          'Repo Language' => 'Jupyter Notebook',
+          'Description' => 'Pangeo website + discussion of general issues
+            related to the project.'
+        }
       ]
     else
       []

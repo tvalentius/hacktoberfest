@@ -1,8 +1,7 @@
 # frozen_string_literal: true
 
 source 'https://rubygems.org'
-git_source(:github) { |repo| "https://github.com/#{repo}.git" }
-ruby File.read(File.expand_path("../.ruby-version", __FILE__)).chomp
+git_source(:github) { |repo| "https://github.com/digitalocean/hacktoberfest.git" }
 
 gem 'airbrake', '~> 9.4'
 gem 'airrecord'
@@ -29,28 +28,35 @@ gem 'loofah', '>= 2.3.1'
 # See: https://github.com/sirupsen/airrecord/issues/63
 gem 'net-http-persistent', '~> 2.9'
 
-gem 'octokit'
-gem 'omniauth-github'
+gem 'octokit', '~> 4.18.0'
+gem 'omniauth-github', '~> 1.4.0'
 gem 'omniauth-rails_csrf_protection', '~> 0.1'
 
 gem 'puma', '~> 4.0'
+
+gem 'country_select', '~> 4.0', require: 'country_select_without_sort_alphabetical'
 
 gem 'rails', '~> 5.2.3'
 
 gem 'sass-rails', '~> 5.0'
 gem 'sidekiq', '< 6.0'
+gem 'sidekiq-scheduler'
 
-unless ENV['RAILS_ENV'] == 'production' || ENV['RAILS_ENV'] == 'staging'
-  require 'dotenv'
-  Dotenv.load['BUNDLE_ENTERPRISE__CONTRIBSYS__COM']
-end
+gem 'figaro'
 
-install_if -> { ENV['BUNDLE_ENTERPRISE__CONTRIBSYS__COM'] } do
-  source 'https://enterprise.contribsys.com/' do
-    gem 'sidekiq-pro'
-    gem 'sidekiq-ent'
-  end
-end
+# commenting out these settings since we are not using enterprise sidekiq in local docker dev
+#unless ENV['RAILS_ENV'] == 'production' || ENV['RAILS_ENV'] == 'staging' || ENV['REDIS_HOST'] == 'redis'
+#  require 'dotenv'
+#  Dotenv.load['BUNDLE_ENTERPRISE__CONTRIBSYS__COM']
+#end
+
+#install_if -> { ENV['BUNDLE_ENTERPRISE__CONTRIBSYS__COM'] } do
+#  source 'https://enterprise.contribsys.com/' do
+#    gem 'sidekiq-pro'
+#    gem 'sidekiq-ent'
+#  end
+#end
+
 
 gem 'state_machines'
 gem 'state_machines-activerecord'

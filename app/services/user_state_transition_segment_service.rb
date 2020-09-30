@@ -13,7 +13,7 @@ module UserStateTransitionSegmentService
     when :complete then complete(user)
     when :retry_complete then complete(user)
     when :incomplete then incomplete(user)
-    when :ineligible then ineligible(user)
+    when :insufficient then insufficient(user)
     when :won then won(user, transition)
     when :gifted then gifted(user)
     end
@@ -22,7 +22,12 @@ module UserStateTransitionSegmentService
   def register(user)
     segment(user).identify(
       email: user.email,
-      marketing_emails: user.marketing_emails,
+      digitalocean_marketing_emails: user.digitalocean_marketing_emails,
+      intel_marketing_emails: user.intel_marketing_emails,
+      dev_marketing_emails: user.dev_marketing_emails,
+      category: user.category,
+      country: user.country,
+      pull_requests_count: user.score,
       state: 'register'
     )
     segment(user).track('register')
@@ -43,9 +48,9 @@ module UserStateTransitionSegmentService
     segment(user).identify(state: 'incomplete')
   end
 
-  def ineligible(user)
-    segment(user).track('user_ineligible')
-    segment(user).identify(state: 'ineligible')
+  def insufficient(user)
+    segment(user).track('user_insufficient')
+    segment(user).identify(state: 'insufficient')
   end
 
   def won(user, transition)

@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class GithubPullRequest
+  attr_accessor :graphql_hash
+
   def initialize(hash)
     @graphql_hash = hash
   end
@@ -27,6 +29,10 @@ class GithubPullRequest
 
   def created_at
     @graphql_hash.createdAt
+  end
+
+  def merged?
+    @graphql_hash.merged
   end
 
   def label_names

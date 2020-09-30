@@ -3,6 +3,11 @@
 require 'rails_helper'
 
 RSpec.describe CouponService do
+  before do
+    allow(UserPullRequestSegmentUpdaterService)
+      .to receive(:call).and_return(true)
+  end
+
   describe '#assign_coupon' do
     context 'with a completed user' do
       let(:user) { FactoryBot.create(:user, :completed) }
@@ -70,6 +75,7 @@ RSpec.describe CouponService do
     end
 
     context 'with an incompleted user' do
+      before { travel_to Time.zone.parse(ENV['END_DATE']) + 1.day }
       let(:user) { FactoryBot.create(:user, :incompleted) }
       let(:coupon_service) { CouponService.new(user) }
 
@@ -138,6 +144,8 @@ RSpec.describe CouponService do
           expect(user.sticker_coupon).to eq(nil)
         end
       end
+
+      after { travel_back }
     end
   end
 end
